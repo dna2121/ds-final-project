@@ -76,10 +76,24 @@ def fun_generate_dim(**kwargs):
     df_province.drop_duplicates(inplace=True) # delete the duplicates data
     print(df_province)
 
-    # load to postgresql
+    # load province to postgresql
     table_name = "dim_province"
     df_province.to_sql(table_name, pg_engine, if_exists='replace', index=False)
     print("============ Success to load data into PosgreSQL ============")
+    pg_engine.dispose()
+
+    ## DISTRICT
+    # transform district data
+    selected_district_column = ['kode_kab', 'kode_prov', 'nama_kab'] # select the 'district' columns
+    df_district = df[selected_district_column]
+    df_district.rename(columns={'kode_kab': 'district_id', 'kode_prov': 'province_id', 'nama_kab': 'district_name'}, inplace=True) # modify column names
+    df_district.drop_duplicates(inplace=True) # delete the duplicates data
+    print(df_district)
+
+    # load district to postgresql
+    table_name = "dim_district"
+    df_district.to_sql(table_name, pg_engine, if_exists='replace', index=False)
+    print("============ Success to load data into PostgreSQL ============")
     pg_engine.dispose()
 
 #create dag
