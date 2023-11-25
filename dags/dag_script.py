@@ -79,7 +79,7 @@ def fun_generate_dim(**kwargs):
     # load province to postgresql
     table_name = "dim_province"
     df_province.to_sql(table_name, pg_engine, if_exists='replace', index=False)
-    print("============ Success to load data into PosgreSQL ============")
+    print("============ Success to load province data into PosgreSQL ============")
     pg_engine.dispose()
 
     ## DISTRICT
@@ -93,7 +93,24 @@ def fun_generate_dim(**kwargs):
     # load district to postgresql
     table_name = "dim_district"
     df_district.to_sql(table_name, pg_engine, if_exists='replace', index=False)
-    print("============ Success to load data into PostgreSQL ============")
+    print("============ Success to load district data into PostgreSQL ============")
+    pg_engine.dispose()
+
+    ## CASE
+    # transform case data
+    print("check nama kolom : ")
+    print(df.columns)
+
+    filtered_columns = [column for column in df.columns if not column.startswith(('ko', 'na')) and '_' in column]
+    df_status = pd.DataFrame({'status': filtered_columns}).drop_duplicates() #buat kolom 'status' di DataFrame status
+    df_status[['status_name', 'status_detail']] = df_status['status'].str.split('_', expand=True) #tambah kolom di DataFrame
+    df_status['id'] = range(1, len(df_status) + 1) #tambah kolom id di DataFrame status
+    print(df_status)
+
+    # load district to postgresql
+    table_name = "dim_case"
+    df_status.to_sql(table_name, pg_engine, if_exists='replace', index=False, index_label='id')
+    print("============ Success to load case data into PostgreSQL ============")
     pg_engine.dispose()
 
 #create dag
