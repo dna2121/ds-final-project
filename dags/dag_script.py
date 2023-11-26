@@ -6,6 +6,7 @@ from datetime import datetime
 from fun.fun_get_data_from_api import fun_get_data_from_api
 from fun.fun_generate_dim import fun_generate_dim
 from fun.fun_insert_district_daily import fun_insert_district_daily
+from fun.fun_insert_province_daily import fun_insert_province_daily
 
 #create dag
 with DAG(
@@ -31,8 +32,9 @@ with DAG(
         python_callable=fun_insert_district_daily
     )
 
-    op_insert_province_daily = EmptyOperator(
-        task_id='insert_province_daily'
+    op_insert_province_daily = PythonOperator(
+        task_id='insert_province_daily',
+        python_callable=fun_insert_province_daily
     )
 
     #flow in dag
